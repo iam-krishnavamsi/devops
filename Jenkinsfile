@@ -1,29 +1,64 @@
-node {
-   def mvnHome
-   stage('Prepare') {
-      git url: 'https://github.com/kesavkummari/javawebapp.git', branch: 'main'
-      mvnHome = tool 'maven'
+pipeline {
+    agent any 
+    tools {
+         maven 'maven'
+         jdk 'java'
     }
-
-    stage('Clean'){
-       sh '${mvnHome}/bin/mvn -Dmaven.test.failure.ignore clean'
-    }
-    stage('Validate'){
-        sh '${mvnHome}/bin/mvn -Dmaven.test.failure.ignore validate'
-    }
-    stage('Compile'){
-        sh '${mvnHome}/bin/mvn -Dmaven.test.failure.ignore compile'
-    }
-    stage('Test'){
-        sh '${mvnHome}/bin/mvn -Dmaven.test.failure.ignore test -DskipTests'
-    }
-    stage('Package'){
-        sh '${mvnHome}/bin/mvn -Dmaven.test.failure.ignore package -DskipTests'
-    }
-    stage('Verfiy'){
-        sh '${mvnHome}/bin/mvn -Dmaven.test.failure.ignore verify -DskipTests'
-    }
-    stage('Install'){
-        sh '${mvnHome}/bin/mvn -Dmaven.test.failure.ignore install -DskipTests'
+    stages {
+//         stage('Stage-0 : Static Code Quality Using SonarQube') { 
+//             steps {
+//                 sh 'mvn sonar:sonar' 
+//             }
+//         }
+        stage('Stage-1 : Clean') { 
+            steps {
+                sh 'mvn clean'
+            }
+        }
+        stage('Stage-2 : Validate') { 
+            steps {
+                sh 'mvn validate'
+            }
+        }
+        stage('Stage-3 : Compile') { 
+            steps {
+                sh 'mvn compile'
+            }
+        }
+        stage('Stage-4 : Test') { 
+            steps {
+                sh 'mvn test -DskipTests'
+            }
+        }
+        stage('Stage-5 : Install') { 
+            steps {
+                sh 'mvn install -DskipTests'
+            }
+        }
+        stage('Stage-6 : Verify') { 
+            steps {
+                sh 'mvn verify -DskipTests'
+            }
+        }
+        stage('Stage-7 : Package') { 
+            steps {
+                sh 'mvn package -DskipTests'
+            }
+        }
+//         stage('Stage-8 : Deploy an Artifact to Artifactory Manager i.e. Nexus/Jfrog') { 
+//             steps {
+//                 sh 'mvn deploy -DskipTests'
+//             }
+//         }
+        stage('Stage-8 : Deployment - Deploy a Artifact cloudops-1.0.0.war file to Tomcat Server') { 
+            steps {
+                sh 'curl -u admin:redhat@123 -T target/**.war "http://44.203.176.144:8080/manager/text/deploy?path=/rrtech&update=true"'
+            }
+        } 
+        stage('Stage-9 : SmokeTest') { 
+            steps {
+                sh 'curl --retry-delay 10 --retry 5 "http://44.203.176.144:8080/rrtech"'
+            }
+        }
     }
 }
