@@ -1,0 +1,19 @@
+{
+    "name": "your-username/php-aws-codepipeline",
+    "description": "A simple PHP application for AWS CodePipeline",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Your Name",
+            "email": "your.email@example.com"
+        }
+    ],
+    "require": {
+        "nesbot/carbon": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        }
+    }
+}
